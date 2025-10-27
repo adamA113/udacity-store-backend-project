@@ -1,54 +1,107 @@
 # Storefront Backend Project
 
-## Getting Started
+This is a RESTful API for an online storefront built with Node.js, Express, and PostgreSQL.
 
-This repo contains a basic Node and Express app to get you started in constructing an API. To get started, clone this repo and run `yarn` in your terminal at the project root.
+---
 
-## Required Technologies
-Your application must make use of the following libraries:
-- Postgres for the database
-- Node/Express for the application logic
-- dotenv from npm for managing environment variables
-- db-migrate from npm for migrations
-- jsonwebtoken from npm for working with JWTs
-- jasmine from npm for testing
+## Setup Instructions
 
-## Steps to Completion
+### 1. Install Dependencies
 
-### 1. Plan to Meet Requirements
+```bash
+npm install
+```
 
-In this repo there is a `REQUIREMENTS.md` document which outlines what this API needs to supply for the frontend, as well as the agreed upon data shapes to be passed between front and backend. This is much like a document you might come across in real life when building or extending an API. 
+### 2. Environment Variables
 
-Your first task is to read the requirements and update the document with the following:
-- Determine the RESTful route for each endpoint listed. Add the RESTful route and HTTP verb to the document so that the frontend developer can begin to build their fetch requests.    
-**Example**: A SHOW route: 'blogs/:id' [GET] 
+Create a `.env` file in the project root with the following variables:
 
-- Design the Postgres database tables based off the data shape requirements. Add to the requirements document the database tables and columns being sure to mark foreign keys.   
-**Example**: You can format this however you like but these types of information should be provided
-Table: Books (id:varchar, title:varchar, author:varchar, published_year:varchar, publisher_id:string[foreign key to publishers table], pages:number)
+```
+POSTGRES_HOST=127.0.0.1
+POSTGRES_DB=my_store
+POSTGRES_PORT=5433
+POSTGRES_TEST_DB=test_store
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=password123
+ENV=dev
+BCRYPT_PASSWORD={add-your-pepper-string}
+SALT_ROUNDS=10
+JWT_SECRET={add-your-jwt-secret}
+```
 
-**NOTE** It is important to remember that there might not be a one to one ratio between data shapes and database tables. Data shapes only outline the structure of objects being passed between frontend and API, the database may need multiple tables to store a single shape. 
+### 3. Database Setup
 
-### 2.  DB Creation and Migrations
+**Start PostgreSQL with Docker:**
 
-Now that you have the structure of the databse outlined, it is time to create the database and migrations. Add the npm packages dotenv and db-migrate that we used in the course and setup your Postgres database. If you get stuck, you can always revisit the database lesson for a reminder. 
+```bash
+docker-compose up -d
+```
 
-You must also ensure that any sensitive information is hashed with bcrypt. If any passwords are found in plain text in your application it will not pass.
+**Run Database Migrations:**
 
-### 3. Models
+```bash
+npm run db:migrate
+```
 
-Create the models for each database table. The methods in each model should map to the endpoints in `REQUIREMENTS.md`. Remember that these models should all have test suites and mocks.
+### 4. Start the Application
 
-### 4. Express Handlers
+**Development Mode:**
 
-Set up the Express handlers to route incoming requests to the correct model method. Make sure that the endpoints you create match up with the enpoints listed in `REQUIREMENTS.md`. Endpoints must have tests and be CORS enabled. 
+```bash
+npm run server
+```
 
-### 5. JWTs
+**Production Mode:**
 
-Add JWT functionality as shown in the course. Make sure that JWTs are required for the routes listed in `REQUIUREMENTS.md`.
+```bash
+npm run build
+npm start
+```
 
-### 6. QA and `README.md`
+### 4. Postman Collection
 
-Before submitting, make sure that your project is complete with a `README.md`. Your `README.md` must include instructions for setting up and running your project including how you setup, run, and connect to your database. 
+Added postman collection which can be imported to test the routes.
+It can be found in the root directory.
+Create a new environment variable in postman as follows: 
+```bash
+base_URL=localhost:3001
+```
 
-Before submitting your project, spin it up and test each endpoint. If each one responds with data that matches the data shapes from the `REQUIREMENTS.md`, it is ready for submission!
+## Database Connection
+
+The application connects to PostgreSQL using the following configuration:
+
+- **Host:** 127.0.0.1
+- **Port:** 5433
+- **Database:** my_store
+- **User:** postgres
+- **Password:** password123
+
+The database runs in a Docker container. Make sure Docker is running before starting the application.
+
+---
+
+## Testing
+
+Run the test suite:
+
+```bash
+npm test
+```
+
+Tests include:
+
+- Model tests
+- API endpoint tests
+
+---
+
+## API Documentation
+
+For detailed API endpoint documentation, see [REQUIREMENTS.md](REQUIREMENTS.md).
+
+
+License
+---
+
+MIT
