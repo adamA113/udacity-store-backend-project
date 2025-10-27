@@ -6,9 +6,7 @@ import router from './routes/index';
 const app: express.Application = express();
 const port = 3001;
 
-// app.use(bodyParser.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(express.json());
+app.use(bodyParser.json());
 app.use(cors());
 
 app.use('/', router);

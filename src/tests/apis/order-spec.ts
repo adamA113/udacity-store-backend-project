@@ -90,7 +90,7 @@ describe('Orders APIs: ', () => {
             .expect(jasmine.any(Array));
     });
 
-    it('POST /orders/add-product/:id should add product to order', async () => {
+    it('POST /orders/add-product should add product to order', async () => {
         const data = {
             order_id: orderId,
             product_id: productId,
@@ -98,7 +98,7 @@ describe('Orders APIs: ', () => {
         };
 
         await request(BASE)
-            .post(`/api/orders/add-product/${orderId}`)
+            .post(`/api/orders/add-product`)
             .set('Authorization', `Bearer ${token}`)
             .send(data)
             .expect('Content-Type', 'application/json')

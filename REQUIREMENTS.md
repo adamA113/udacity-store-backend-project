@@ -29,6 +29,7 @@ This file explain the API endpoints, database schema, and data shapes for the St
 | **GET**      | `/orders/current/:user_id`     | Get current order for user     | **Token Required** |
 | **POST**     | `/orders/create`               | Create a new order             | None               |
 | **GET**      | `/orders`                      | Get all orders                 | **Token Required** |
+| **GET**      | `/add-product`                 | Add product to order           | **Token Required** |
 | **GET**      | `/orders/:id`                  | Get order by ID                | **Token Required** |
 | **PUT**      | `/orders/:id`                  | Update a order by ID           | **Token Required** |  
 | **DELETE**   | `/orders/:id`                  | Delete order by ID             | **Token Required** |
