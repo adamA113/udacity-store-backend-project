@@ -1,6 +1,6 @@
 # Storefront Backend Project
 
-This is a RESTful API for an online storefront built with Node.js, Express, and PostgreSQL.
+This is a RESTful API for an online product store built mainly with Node.js, Express, and PostgreSQL.
 
 ---
 
