@@ -75,8 +75,8 @@ _Note: status = true means active order, status = false means completed order_
 
 ---
 
-## Data Shapes
-### User
+## Data Schema
+### User Schema
 
 ```typescript
 type User = {
@@ -87,7 +87,7 @@ type User = {
 };
 ```
 
-### Product
+### Product Schema
 
 ```typescript
 type Product = {
@@ -98,7 +98,7 @@ type Product = {
 };
 ```
 
-### Order
+### Order Schema
 
 ```typescript
 type Order = {
@@ -108,7 +108,7 @@ type Order = {
 };
 ```
 
-### Product in Order
+### Product in Order Schema
 
 ```typescript
 type ProductInOrder = {
@@ -128,4 +128,4 @@ Routes marked with **Token Required** need a valid JWT token in the Authorizatio
 Authorization: Bearer <token>
 ```
 
-Tokens are generated when creating a new user via `POST /users/create` API.
+Tokens are generated upon creating a new user via `POST /users/create` API endpoint.
