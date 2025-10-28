@@ -12,8 +12,8 @@ describe('Order Model', () => {
     
     beforeAll(async () => {
         const user = await userStore.createNewUser({
-            firstName: 'Order',
-            lastName: 'TestUser',
+            firstname: 'Order',
+            lastname: 'TestUser',
             password: 'test123',
         });
         userId = user.id as number;

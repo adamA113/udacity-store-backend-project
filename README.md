@@ -22,7 +22,7 @@ POSTGRES_DB=my_store
 POSTGRES_PORT=5433
 POSTGRES_TEST_DB=test_store
 POSTGRES_USER=postgres
-POSTGRES_PASSWORD=password123
+POSTGRES_PASSWORD=postgres
 ENV=dev
 BCRYPT_PASSWORD={add-your-pepper-string}
 SALT_ROUNDS=10
@@ -48,14 +48,12 @@ npm run db:migrate
 **Development Mode:**
 
 ```bash
-npm run server
-```
+npm start
 
 **Production Mode:**
 
 ```bash
 npm run build
-npm start
 ```
 
 ### 4. Postman Collection
@@ -75,7 +73,7 @@ The application connects to PostgreSQL using the following configuration:
 - **Port:** 5433
 - **Database:** my_store
 - **User:** postgres
-- **Password:** password123
+- **Password:** postgres
 
 The database runs in a Docker container. Make sure Docker is running before starting the application.
 
@@ -84,6 +82,7 @@ The database runs in a Docker container. Make sure Docker is running before star
 ## Testing
 
 Run the test suite:
+Make sure the server is running and the database is up, then run:
 
 ```bash
 npm test

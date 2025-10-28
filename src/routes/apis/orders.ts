@@ -8,7 +8,7 @@ const ordersController = new OrdersController();
 ordersRouter.get('/', auth, ordersController.getAllOrders);
 ordersRouter.get('/:id', auth, ordersController.getOrderById);
 ordersRouter.get('/current/:user_id', auth, ordersController.currentOrderByUser);
-ordersRouter.post('/create', ordersController.createNewOrder);
+ordersRouter.post('/create', auth, ordersController.createNewOrder);
 ordersRouter.post('/add-product', auth, ordersController.addProductToOrder);
 ordersRouter.put('/:id', auth, ordersController.updateOrder);
 ordersRouter.delete('/:id', auth, ordersController.deleteOrder);

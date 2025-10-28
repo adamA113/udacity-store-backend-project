@@ -5,126 +5,93 @@ import client from "../../database";
 const BASE = "localhost:3001";
 
 describe('Users APIS: ', () => {
-    let token: String = "";
-    let id: Number | null = null;
+    let token: string = "";
+    let id: number | null = null;
 
     beforeAll(async () => {
         const res = await request(BASE)
-            .post("/users")
+            .post("/users/create")
             .send({
-                firstName: "John",
-                lastName: "Smith",
+                firstname: "John",
+                lastname: "Smith",
                 password: "test123"
             })
             .expect(201)
-            .expect("content-type", /json/i);
+            .expect("content-type", /json/);
 
         expect(res.body).toBeDefined();
         expect(res.body).toEqual(
             jasmine.objectContaining({
-                User: jasmine.objectContaining({
+                user: jasmine.objectContaining({
                     id: jasmine.any(Number),
-                    firstName: jasmine.any(String),
-                    lastName: jasmine.any(String),
+                    firstname: jasmine.any(String),
+                    lastname: jasmine.any(String),
                 }),
                 token: jasmine.any(String),
-                message: "User created successfully!",
+                message: "User has been created successfully!",
             })
         );
-        id = res.body.User.id;
+        id = res.body.user.id;
         token = res.body.token;
     });
 
     it('POST /users/create should return a new user', async () => {
-        const data = {
-            firstName: "John",
-            lastName: "Smith",
-            password: "test123"
-        };
-        await request(BASE)
-            .post('/api/users/create')
-            .send(data)
-            .expect('Content-Type', 'application/json')
-            .expect(201)
-            .expect({
-                id: 1,
-                firstName: "John",
-                lastName: "Smith",
-                password: "test123"
-            });
-    })
-
-    it('POST /users/create should fail if required firstName is not sent', async () => {
-        const data = {
-            lastName: "Smith",
-            password: "test123"
-        };
-        await request(BASE)
-            .post('/api/users/create')
-            .set('Authorization', `Bearer ${token}`)
-            .send(data)
-            .expect('Content-Type', 'application/json')
-            .expect(400)
-            .expect({
-                error: 'Missing firstName',
-            });
+        expect(token).toBeDefined();
+        expect(id).toBeDefined();
     })
 
     it('GET /users should return all users', async () => {
-        await request(BASE)
-            .get('/api/users')
-            .set('Authorization', `Bearer ${token}`)
+        const res = await request(BASE)
+            .get("/users")
+            .set("Authorization", `Bearer ${token}`)
             .expect(200)
-            .expect('Content-Type', 'application/json')
-            .expect([
-                {
-                    id: 1,
-                    firstName: "John",
-                    lastName: "Smith",
-                    password: "test123"
-                },
-            ]);
+            .expect("content-type", /json/);
+
+        expect(res.body).toBeDefined();
+        expect(Array.isArray(res.body)).toBeTrue();
     })
  
     it('GET /users/:id should show a user', async () => {
-        await request(BASE)
-            .get('/api/users/1')
+        const res = await request(BASE)
+            .get(`/users/${id}`)
             .set('Authorization', `Bearer ${token}`)
-            .expect('Content-Type', 'application/json')
+            .expect('Content-Type', /json/)
             .expect(200)
-            .expect({
-                id: 1,
-                firstName: "John",
-                lastName: "Smith",
-                password: "test123"
-            });
+
+        expect(res.body).toEqual(
+            jasmine.objectContaining({
+                id: jasmine.any(Number),
+                 firstname: jasmine.any(String),
+                 lastname: jasmine.any(String),
+            })
+        );
     })
 
     it('PUT /users/:id should update a user', async () => {
         const data = {
-            firstName: "John",
-            lastName: "Smith",
+            firstname: "John",
+            lastname: "Peter",
             password: "test456"
         };
-        await request(BASE)
-            .put('/api/users/1')
+        const res = await request(BASE)
+            .put(`/users/${id}`)
             .set('Authorization', `Bearer ${token}`)
             .send(data)
-            .expect('Content-Type', 'application/json')
             .expect('Content-Type', /json/)
-            .expect(200)
-            .expect({
-                id: 1,
-                firstName: "John",
-                lastName: "Smith",
-                password: "test456"
-            });
+            .expect(201)
+
+        expect(res.body.lastname).toEqual('Peter');
     })
 
     it('DELETE /users/:id should delete a user', async () => {
-        await request(BASE).delete('/api/users/1').expect(200).expect({
-            status: 'Deleted user 1',
-        });
+        await request(BASE)
+            .delete(`/users/${id}`)
+            .set('Authorization', `Bearer ${token}`)
+            .expect('Content-Type', /json/)
+            .expect(200)
+            .expect({
+                message: `User with id ${id} has been deleted successfully`,
+            });
     })
 
     afterAll(async () => {

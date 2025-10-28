@@ -35,10 +35,10 @@ export class UserModel {
         try {
             // @ts-ignore
             const connection = await client.connect();
-            const query = 'INSERT INTO users (first_name, last_name, password) VALUES($1, $2, $3) RETURNING *'
+            const query = 'INSERT INTO users (firstname, lastname, password) VALUES($1, $2, $3) RETURNING *'
             const result = await connection.query(query, [
-                user.firstName,
-                user.lastName,
+                user.firstname,
+                user.lastname,
                 user.password,
             ]);
             connection.release();
@@ -53,11 +53,11 @@ export class UserModel {
         try {
             // @ts-ignore
             const connection = await client.connect();
-            const query = `UPDATE users SET first_name = $2, last_name = $3, password = $4 WHERE id = $1 RETURNING *`
+            const query = `UPDATE users SET firstname = $2, lastname = $3, password = $4 WHERE id = $1 RETURNING *`
             const result = await connection.query(query, [
                 user.id,
-                user.firstName,
-                user.lastName,
+                user.firstname,
+                user.lastname,
                 user.password,
             ]);
             connection.release();

@@ -17,7 +17,7 @@ export default class ProductsController {
         try {
             const product = await productTable.getProductById(parseInt(req.params.id));
 
-            if (product?.id) {
+            if (product) {
                 return res.status(200).json(product);
             } else {
                 return res.status(404).json({
@@ -48,7 +48,10 @@ export default class ProductsController {
                 price: parseFloat(price),
                 category
             });
-            return res.status(201).json(product);
+            return res.status(201).json({
+                product,
+                message: "Product has been created successfully!",
+            });
         } catch (e) {
             return res.status(500).json(e);
         }
@@ -56,7 +59,7 @@ export default class ProductsController {
 
     async updateProduct(req: express.Request, res: express.Response) {
         try {
-            const { id, name, price, category } = req.body;
+            const { name, price, category } = req.body;
 
             if (!name) {
                 return res.status(400).json({
@@ -64,17 +67,14 @@ export default class ProductsController {
                 })
             }
 
-            const newProduct = await productTable.updateProduct({
-                id: parseInt(id),
+            const product = await productTable.updateProduct({
+                id: parseInt(req.params.id),
                 name,
                 price: parseFloat(price),
                 category
             });
             
-            return res.status(201).json({
-                product: newProduct,
-                message: "Product has been created successfully!",
-            });
+            return res.status(201).json(product);
         } catch (e) {
             return res.status(500).json(e);
         }

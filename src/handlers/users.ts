@@ -22,7 +22,7 @@ export default class UsersController {
         try {
             const user = await userTable.getUserById(parseInt(req.params.id));
 
-            if (user?.id) {
+            if (user) {
                 return res.status(200).json(user);
             } else {
                 return res.status(404).json({
@@ -36,7 +36,7 @@ export default class UsersController {
 
     async createNewUser(req: express.Request, res: express.Response) {
         try {
-            if (!req.body.firstName || !req.body.lastName || !req.body.password) {
+            if (!req.body.firstname || !req.body.lastname || !req.body.password) {
                 return res.status(400).json({
                     error: 'Missing username (first or last name), or password'
                 });
@@ -46,8 +46,8 @@ export default class UsersController {
 
             try {
                 const newUser = await userTable.createNewUser({
-                    firstName: req.body.firstName,
-                    lastName: req.body.lastName,
+                    firstname: req.body.firstname,
+                    lastname: req.body.lastname,
                     password: hashedPassword,
                 });
 
@@ -55,13 +55,13 @@ export default class UsersController {
                     const token: string = jwt.sign(
                         {
                             id: newUser.id,
-                            firstName: newUser.firstName,
-                            lastName: newUser.lastName
+                            firstname: newUser.firstname,
+                            lastname: newUser.lastname
                         },
                         process.env.JWT_SECRET as string
                     );
                     return res.status(201).json({
-                        User: newUser,
+                        user: newUser,
                         token,
                         message: "User has been created successfully!",
                     });
@@ -78,7 +78,7 @@ export default class UsersController {
 
     async updateUser(req: express.Request, res: express.Response) {
         try {
-            if (!req.body.firstName || !req.body.lastName) {
+            if (!req.body.firstname || !req.body.lastname) {
                 return res.status(400).json({
                     error: 'User first and last names are required',
                 });
@@ -90,8 +90,8 @@ export default class UsersController {
 
             const user = await userTable.updateUser({
                 id: parseInt(req.params.id),
-                firstName: req.body.firstName,
-                lastName: req.body.lastName,
+                firstname: req.body.firstname,
+                lastname: req.body.lastname,
                 password: req.body.password,
             });
 

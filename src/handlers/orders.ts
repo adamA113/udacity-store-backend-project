@@ -17,7 +17,7 @@ export default class OrdersController {
         try {
             const order = await ordersTable.getOrderById(parseInt(req.params.id));
 
-            if (order?.id) {
+            if (order) {
                 return res.status(200).json(order);
             } else {
                 return res.status(404).json({

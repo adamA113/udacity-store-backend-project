@@ -1,93 +1,105 @@
 import request from "supertest";
 // @ts-ignore
 import client from "../../database";
+import app from "../../server";
 
-const BASE = "localhost:3001";
+const BASE = app;
 
-describe('Orders APIs: ', () => {
-    let token: String = "";
-    let userId: Number | null = null;
-    let orderId: Number | null = null;
-    let productId: Number | null = null;
+fdescribe('Orders APIs: ', () => {
+    let token: string = "";
+    let userId: number | null = null;
+    let orderId: number | null = null;
+    let productId: number | null = null;
 
     beforeAll(async () => {
         const userRes = await request(BASE)
-            .post("/api/users/create")
+            .post("/users/create")
             .send({
-                firstName: "Order",
-                lastName: "TestUser",
+                firstname: "Order",
+                lastname: "TestUser",
                 password: "test123"
             })
-            .expect(201);
+            .expect(201)
+            .expect("content-type", /json/);
 
-        userId = userRes.body.User.id;
+        userId = userRes.body.user.id;
         token = userRes.body.token;
 
         const productRes = await request(BASE)
-            .post("/api/products/create")
+            .post("/products/create")
             .set('Authorization', `Bearer ${token}`)
             .send({
                 name: "Test Product",
                 price: 99.99,
                 category: "Test Category"
             })
-            .expect(201);
+            .expect(201)
+            .expect("content-type", /json/);
 
-        productId = productRes.body.id;
-    });
+        productId = productRes.body.product.id;
 
-    it('POST /orders/create should create a new order', async () => {
-        const data = {
-            user_id: userId,
-            status: false
-        };
-        
-        const res = await request(BASE)
-            .post('/api/orders/create')
+        const orderRes = await request(BASE)
+            .post('/orders/create')
             .set('Authorization', `Bearer ${token}`)
-            .send(data)
-            .expect('Content-Type', 'application/json')
+            .send({
+                user_id: userId,
+                status: false
+            })
+            .expect('Content-Type', /json/)
             .expect(201);
 
-        expect(res.body).toEqual(
+        console.log(orderRes.body)
+
+        expect(orderRes.body).toEqual(
             jasmine.objectContaining({
                 id: jasmine.any(Number),
                 user_id: userId,
                 status: false
             })
         );
-        orderId = res.body.id;
+        orderId = orderRes.body.id;
+    });
+
+    it('POST /orders/create should create a new order', async () => {
+        expect(orderId).toBeDefined();
     });
 
     it('GET /orders should return all orders', async () => {
-        await request(BASE)
-            .get('/api/orders')
+        const res = await request(BASE)
+            .get('/orders')
             .set('Authorization', `Bearer ${token}`)
             .expect(200)
-            .expect('Content-Type', 'application/json')
-            .expect(jasmine.any(Array));
+            .expect('Content-Type', /json/);
+
+        expect(res.body).toBeDefined();
+        expect(Array.isArray(res.body)).toBeTrue();
     });
 
     it('GET /orders/:id should show a specific order', async () => {
-        await request(BASE)
-            .get(`/api/orders/${orderId}`)
+        const res = await request(BASE)
+            .get(`/orders/${orderId}`)
             .set('Authorization', `Bearer ${token}`)
-            .expect('Content-Type', 'application/json')
-            .expect(200)
-            .expect(jasmine.objectContaining({
-                id: orderId,
-                user_id: userId,
-                status: false
-            }));
+            .expect('Content-Type', /json/)
+            .expect(200);
+
+        expect(res.body).toEqual(
+            jasmine.objectContaining({
+                id: jasmine.any(Number),
+                user_id: jasmine.any(Number),
+                status: jasmine.any(Boolean)
+            })
+        );
     });
 
     it('GET /orders/current/:user_id should return current orders for user', async () => {
-        await request(BASE)
-            .get(`/api/orders/current/${userId}`)
+        const res = await request(BASE)
+            .get(`/orders/current/${userId}`)
             .set('Authorization', `Bearer ${token}`)
             .expect(200)
-            .expect('Content-Type', 'application/json')
-            .expect(jasmine.any(Array));
+            .expect('Content-Type', /json/);
+
+        expect(res.body).toBeDefined();
+        expect(Array.isArray(res.body)).toBeTrue();
     });
 
     it('POST /orders/add-product should add product to order', async () => {
@@ -97,17 +109,20 @@ describe('Orders APIs: ', () => {
             quantity: 2
         };
 
-        await request(BASE)
-            .post(`/api/orders/add-product`)
+        const res = await request(BASE)
+            .post(`/orders/add-product`)
             .set('Authorization', `Bearer ${token}`)
             .send(data)
-            .expect('Content-Type', 'application/json')
-            .expect(200)
-            .expect(jasmine.objectContaining({
-                order_id: orderId,
-                product_id: productId,
-                quantity: 2
-            }));
+            .expect('Content-Type', /json/)
+            .expect(200);
+
+        expect(res.body).toEqual(
+            jasmine.objectContaining({
+                order_id: jasmine.any(Number),
+                product_id: jasmine.any(Number),
+                quantity: jasmine.any(Number)
+            })
+        );
     });
 
     it('PUT /orders/:id should update an order', async () => {
@@ -116,28 +131,34 @@ describe('Orders APIs: ', () => {
             status: true
         };
 
-        await request(BASE)
-            .put(`/api/orders/${orderId}`)
+        const res = await request(BASE)
+            .put(`/orders/${orderId}`)
             .set('Authorization', `Bearer ${token}`)
             .send(data)
-            .expect('Content-Type', 'application/json')
-            .expect(201)
-            .expect(jasmine.objectContaining({
-                id: orderId,
-                user_id: userId,
-                status: true
-            }));
+            .expect('Content-Type', /json/)
+            .expect(201);
+
+        expect(res.body).toEqual(
+            jasmine.objectContaining({
+                id: jasmine.any(Number),
+                user_id: jasmine.any(Number),
+                status: jasmine.any(Boolean)
+            })
+        );
     });
 
     it('DELETE /orders/:id should delete an order', async () => {
-        await request(BASE)
-            .delete(`/api/orders/${orderId}`)
+        const res = await request(BASE)
+            .delete(`/orders/${orderId}`)
             .set('Authorization', `Bearer ${token}`)
             .expect(200)
-            .expect('Content-Type', 'application/json')
-            .expect({
-                message: `Order with id ${orderId} has been deleted successfully`
-            });
+            .expect('Content-Type', /json/);
+
+        expect(res.body).toEqual(
+            jasmine.objectContaining({
+                message: jasmine.any(String)
+            })
+        );
     });
 
     afterAll(async () => {

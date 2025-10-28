@@ -1,18 +1,18 @@
 {
     "dev": {
         "driver": "pg",
-        "host": "localhost",
+        "host": "127.0.0.1",
         "port": 5433,
         "database": "my_store",
         "user": "postgres",
-        "password": "password123"
+        "password": "postgres"
     },
     "test": {
         "driver": "pg",
-        "host": "localhost",
+        "host": "127.0.0.1",
         "port": 5433,
         "database": "test_store",
         "user": "postgres", 
-        "password": "password123"
+        "password": "postgres"
     }
 }

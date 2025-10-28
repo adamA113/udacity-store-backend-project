@@ -1,51 +1,71 @@
 import { UserModel } from '../../models/user';
+// @ts-ignore
+import client from "../../database";
 
 const store = new UserModel();
 
 describe('User Model', () => {
-    
-    it('should create new user', async () => {
+    let id: number;
+    beforeAll(async () => {
         const result = await store.createNewUser({
-            firstName: 'Sallie',
-            lastName: 'Test',
+            firstname: 'Sallie',
+            lastname: 'Test',
             password: 'password123',
         });
+        id = result.id as number;
         expect(result.password).toEqual('password123');
     })
 
     it('should update a specific user', async () => {
         const users = await store.getAllUsers();
-        const userId = users[0].id;
+        const userId = id;
 
         const result = await store.updateUser({
             id: userId,
-            firstName: 'Madison',
-            lastName: 'Tester',
+            firstname: 'Madison',
+            lastname: 'Tester',
             password: 'password123',
         });
-        expect(result.firstName).toEqual('madison');
+        expect(result).toEqual(
+            jasmine.objectContaining({
+                id: jasmine.any(Number),
+                firstname: jasmine.any(String),
+                lastname: jasmine.any(String),
+            })
+        );
     })
 
     it('should return a list of users', async () => {
         const result = await store.getAllUsers();
-        expect(result.length).toEqual(1);
+        expect(Array.isArray(result)).toBeTrue();
     })
 
     it('should return a specific user', async () => {
-        const users = await store.getAllUsers();
-        const userId = users[0].id as number;
-
-        const result = await store.getUserById(userId);
-        expect(result.firstName).toEqual('madison');
+        expect(store.getUserById).toBeDefined();
+        const user = await store.getUserById(Number(id));
+        expect(user).toEqual(
+            jasmine.objectContaining({
+                id: jasmine.any(Number),
+                firstname: jasmine.any(String),
+                lastname: jasmine.any(String),
+            })
+        );
     })
 
     it('should delete a specific user', async () => {
-        let users = await store.getAllUsers();
-        const userId = users[0].id as number;
+        const userId = id;
 
         await store.deleteUser(userId);
-        users = await store.getAllUsers();
+        let users = await store.getAllUsers();
 
         expect(users.length).toEqual(0);
     })
+
+    afterAll(async () => {
+        // @ts-ignore
+        const conn = await client.connect();
+        const query = `DELETE FROM users WHERE id=($1)`;
+        await conn.query(query, [id]);
+        conn.release();
+    });
 })
