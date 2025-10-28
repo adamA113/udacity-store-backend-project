@@ -49,6 +49,7 @@ npm run db:migrate
 
 ```bash
 npm start
+```
 
 **Production Mode:**
 
