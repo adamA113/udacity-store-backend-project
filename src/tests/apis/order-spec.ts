@@ -5,7 +5,7 @@ import app from "../../server";
 
 const BASE = app;
 
-fdescribe('Orders APIs: ', () => {
+describe('Orders APIs: ', () => {
     let token: string = "";
     let userId: number | null = null;
     let orderId: number | null = null;
