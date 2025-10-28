@@ -177,5 +177,13 @@ describe('Orders APIs: ', () => {
             await conn.query(deleteProductQuery, [productId]);
             conn.release();
         }
+
+        if (orderId) {
+            // @ts-ignore
+            const conn = await client.connect();
+            const deleteOrderQuery = `DELETE FROM orders WHERE id=($1)`;
+            await conn.query(deleteOrderQuery, [orderId]);
+            conn.release();
+        }
     });
 });

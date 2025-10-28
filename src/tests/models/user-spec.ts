@@ -5,21 +5,20 @@ import client from "../../database";
 const store = new UserModel();
 
 describe('User Model', () => {
-    let id: number;
+    let userId: number;
+
     beforeAll(async () => {
         const result = await store.createNewUser({
             firstname: 'Sallie',
             lastname: 'Test',
             password: 'password123',
         });
-        id = result.id as number;
+        userId = result.id as number;
         expect(result.password).toEqual('password123');
     })
 
     it('should update a specific user', async () => {
         const users = await store.getAllUsers();
-        const userId = id;
-
         const result = await store.updateUser({
             id: userId,
             firstname: 'Madison',
@@ -42,7 +41,7 @@ describe('User Model', () => {
 
     it('should return a specific user', async () => {
         expect(store.getUserById).toBeDefined();
-        const user = await store.getUserById(Number(id));
+        const user = await store.getUserById(Number(userId));
         expect(user).toEqual(
             jasmine.objectContaining({
                 id: jasmine.any(Number),
@@ -53,8 +52,6 @@ describe('User Model', () => {
     })
 
     it('should delete a specific user', async () => {
-        const userId = id;
-
         await store.deleteUser(userId);
         let users = await store.getAllUsers();
 
@@ -65,7 +62,7 @@ describe('User Model', () => {
         // @ts-ignore
         const conn = await client.connect();
         const query = `DELETE FROM users WHERE id=($1)`;
-        await conn.query(query, [id]);
+        await conn.query(query, [userId]);
         conn.release();
     });
 })

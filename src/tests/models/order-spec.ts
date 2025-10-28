@@ -9,6 +9,7 @@ const productStore = new ProductModel();
 describe('Order Model', () => {
     let userId: number;
     let productId: number;
+    let orderId: number;
     
     beforeAll(async () => {
         const user = await userStore.createNewUser({
@@ -31,6 +32,8 @@ describe('Order Model', () => {
             status: false,
             user_id: userId,
         });
+
+        orderId = result.id as number;
         expect(result).toEqual(
             jasmine.objectContaining({
                 id: jasmine.any(Number),
@@ -105,5 +108,32 @@ describe('Order Model', () => {
         const remainingOrders = await orderStore.getAllOrders();
 
         expect(remainingOrders.find((o: any) => o.id === orderId)).toBeUndefined();
+    });
+
+
+    afterAll(async () => {
+        if (userId) {
+            // @ts-ignore
+            const conn = await client.connect();
+            const deleteUserQuery = `DELETE FROM users WHERE id=($1)`;
+            await conn.query(deleteUserQuery, [userId]);
+            conn.release();
+        }
+
+        if (productId) {
+            // @ts-ignore
+            const conn = await client.connect();
+            const deleteProductQuery = `DELETE FROM products WHERE id=($1)`;
+            await conn.query(deleteProductQuery, [productId]);
+            conn.release();
+        }
+
+        if (orderId) {
+            // @ts-ignore
+            const conn = await client.connect();
+            const deleteOrderQuery = `DELETE FROM orders WHERE id=($1)`;
+            await conn.query(deleteOrderQuery, [orderId]);
+            conn.release();
+        }
     });
 });
