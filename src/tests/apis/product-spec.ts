@@ -10,7 +10,7 @@ describe('Product APIS: ', () => {
     let productId: number | null = null;
     let category: string = "";
 
-    beforeAll(async () => {
+    beforeEach(async () => {
         let res = await request(BASE)
             .post("/users/create")
             .send({
@@ -107,8 +107,6 @@ describe('Product APIS: ', () => {
             .expect('Content-Type', /json/)
             .expect(201);
 
-            console.log(res.body)
-
         expect(res.body.category).toEqual('Test');
     })
 
@@ -126,7 +124,7 @@ describe('Product APIS: ', () => {
         );
     })
 
-    afterAll(async () => {
+    afterEach(async () => {
         // @ts-ignore
         const conn = await client.connect();
         let query = `DELETE FROM users WHERE id=($1)`;

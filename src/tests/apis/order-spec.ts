@@ -11,7 +11,7 @@ describe('Orders APIs: ', () => {
     let orderId: number | null = null;
     let productId: number | null = null;
 
-    beforeAll(async () => {
+    beforeEach(async () => {
         const userRes = await request(BASE)
             .post("/users/create")
             .send({
@@ -47,8 +47,6 @@ describe('Orders APIs: ', () => {
             })
             .expect('Content-Type', /json/)
             .expect(201);
-
-        console.log(orderRes.body)
 
         expect(orderRes.body).toEqual(
             jasmine.objectContaining({
@@ -161,29 +159,15 @@ describe('Orders APIs: ', () => {
         );
     });
 
-    afterAll(async () => {
-        if (userId) {
-            // @ts-ignore
-            const conn = await client.connect();
-            const deleteUserQuery = `DELETE FROM users WHERE id=($1)`;
-            await conn.query(deleteUserQuery, [userId]);
-            conn.release();
-        }
+    afterEach(async () => {
+        // @ts-ignore
+        const conn = await client.connect();
 
-        if (productId) {
-            // @ts-ignore
-            const conn = await client.connect();
-            const deleteProductQuery = `DELETE FROM products WHERE id=($1)`;
-            await conn.query(deleteProductQuery, [productId]);
-            conn.release();
-        }
+        await conn.query('DELETE FROM products_orders');
+        await conn.query('DELETE FROM orders');
+        await conn.query('DELETE FROM products');
+        await conn.query('DELETE FROM users');
 
-        if (orderId) {
-            // @ts-ignore
-            const conn = await client.connect();
-            const deleteOrderQuery = `DELETE FROM orders WHERE id=($1)`;
-            await conn.query(deleteOrderQuery, [orderId]);
-            conn.release();
-        }
+        conn.release();
     });
 });

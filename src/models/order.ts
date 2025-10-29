@@ -27,7 +27,7 @@ export class OrderModel {
 
             return result.rows[0];
         } catch (err) {
-            throw new Error(`Could not find product ${id}. Error: ${err}`);
+            throw new Error(`Could not find order ${id}. Error: ${err}`);
         }
     }
 
@@ -70,7 +70,7 @@ export class OrderModel {
         try {
             // @ts-ignore
             const conn = await client.connect();
-            const query = 'DELETE FROM products WHERE id=($1)';
+            const query = 'DELETE FROM orders WHERE id=($1) RETURNING *';
             const result = await conn.query(query, [id]);
             conn.release();
 
@@ -94,15 +94,15 @@ export class OrderModel {
         }
     }
 
-    async addProductToOrder(poduct: ProductToOrder): Promise<ProductToOrder> {
+    async addProductToOrder(product: ProductToOrder): Promise<ProductToOrder> {
         try {
             // @ts-ignore
             const connection = await client.connect();
-            const query = 'INSERT INTO order_products (order_id, product_id, quantity) VALUES($1, $2, $3) RETURNING *';
+            const query = 'INSERT INTO products_orders (order_id, product_id, quantity) VALUES($1, $2, $3) RETURNING *';
             const result = await connection.query(query, [
-                poduct.order_id,
-                poduct.product_id,
-                poduct.quantity,
+                product.order_id,
+                product.product_id,
+                product.quantity,
             ]);
             connection.release();
 

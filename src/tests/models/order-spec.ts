@@ -2,6 +2,9 @@ import { OrderModel } from '../../models/order';
 import { UserModel } from '../../models/user';
 import { ProductModel } from '../../models/product';
 
+// @ts-ignore
+import client from "../../database";
+
 const orderStore = new OrderModel();
 const userStore = new UserModel();
 const productStore = new ProductModel();
@@ -10,8 +13,8 @@ describe('Order Model', () => {
     let userId: number;
     let productId: number;
     let orderId: number;
-    
-    beforeAll(async () => {
+
+    beforeEach(async () => {
         const user = await userStore.createNewUser({
             firstname: 'Order',
             lastname: 'TestUser',
@@ -25,18 +28,20 @@ describe('Order Model', () => {
             category: 'Order Category',
         });
         productId = product.id as number;
-    });
 
-    it('should create a new order', async () => {
-        const result = await orderStore.createNewOrder({
+        const order = await orderStore.createNewOrder({
             status: false,
             user_id: userId,
         });
+        orderId = order.id as number;
+    });
 
-        orderId = result.id as number;
+    it('should create a new order', async () => {
+        const result = await orderStore.getOrderById(orderId);
+
         expect(result).toEqual(
             jasmine.objectContaining({
-                id: jasmine.any(Number),
+                id: orderId,
                 status: false,
                 user_id: userId,
             })
@@ -50,10 +55,7 @@ describe('Order Model', () => {
     });
 
     it('should return a specific order', async () => {
-        const orders = await orderStore.getAllOrders();
-        const orderId = orders[0].id as number;
         const result = await orderStore.getOrderById(orderId);
-        
         expect(result).toEqual(
             jasmine.objectContaining({
                 id: orderId,
@@ -63,16 +65,13 @@ describe('Order Model', () => {
     });
 
     it('should update a specific order', async () => {
-        const orders = await orderStore.getAllOrders();
-        const orderId = orders[0].id as number;
-
-        const result = await orderStore.updateOrder({
+        const updated = await orderStore.updateOrder({
             id: orderId,
             status: true,
             user_id: userId,
         });
-        
-        expect(result.status).toEqual(true);
+
+        expect(updated.status).toBeTrue();
     });
 
     it('should get current orders for a user', async () => {
@@ -82,15 +81,12 @@ describe('Order Model', () => {
     });
 
     it('should add a product to an order', async () => {
-        const orders = await orderStore.getAllOrders();
-        const orderId = orders[0].id as number;
-
         const result = await orderStore.addProductToOrder({
             order_id: orderId,
             product_id: productId,
             quantity: 2,
         });
-        
+
         expect(result).toEqual(
             jasmine.objectContaining({
                 order_id: orderId,
@@ -101,39 +97,21 @@ describe('Order Model', () => {
     });
 
     it('should delete a specific order', async () => {
-        const orders = await orderStore.getAllOrders();
-        const orderId = orders[0].id as number;
-
         await orderStore.deleteOrder(orderId);
         const remainingOrders = await orderStore.getAllOrders();
-
-        expect(remainingOrders.find((o: any) => o.id === orderId)).toBeUndefined();
+        const deletedOrder = remainingOrders.find((o: any) => o.id === orderId);
+        expect(deletedOrder).toBeUndefined();
     });
 
+    afterEach(async () => {
+        // @ts-ignore
+        const conn = await client.connect();
 
-    afterAll(async () => {
-        if (userId) {
-            // @ts-ignore
-            const conn = await client.connect();
-            const deleteUserQuery = `DELETE FROM users WHERE id=($1)`;
-            await conn.query(deleteUserQuery, [userId]);
-            conn.release();
-        }
+        await conn.query('DELETE FROM products_orders');
+        await conn.query('DELETE FROM orders');
+        await conn.query('DELETE FROM products');
+        await conn.query('DELETE FROM users');
 
-        if (productId) {
-            // @ts-ignore
-            const conn = await client.connect();
-            const deleteProductQuery = `DELETE FROM products WHERE id=($1)`;
-            await conn.query(deleteProductQuery, [productId]);
-            conn.release();
-        }
-
-        if (orderId) {
-            // @ts-ignore
-            const conn = await client.connect();
-            const deleteOrderQuery = `DELETE FROM orders WHERE id=($1)`;
-            await conn.query(deleteOrderQuery, [orderId]);
-            conn.release();
-        }
+        conn.release();
     });
 });

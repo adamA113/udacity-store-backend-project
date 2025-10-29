@@ -7,8 +7,8 @@ This file explain the API endpoints, database schema, and data shapes for the St
 | HTTP Method  | Route          | Description          | Authentication     |
 | ----------   | -------------- | -------------------- | -------------------|
 | **POST**     | `/users/create`| Create a new user    | None               |
-| **GET**      | `/users`       | Get all users        | None               |
-| **GET**      | `/users/:id`   | Get user by ID       | None               |
+| **GET**      | `/users`       | Get all users        | **Token Required** |
+| **GET**      | `/users/:id`   | Get user by ID       | **Token Required** |
 | **PUT**      | `/users/:id`   | Update a user by ID  | **Token Required** |  
 | **DELETE**   | `/users/:id`   | Delete user by ID    | **Token Required** |
 

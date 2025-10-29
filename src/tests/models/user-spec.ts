@@ -7,7 +7,7 @@ const store = new UserModel();
 describe('User Model', () => {
     let userId: number;
 
-    beforeAll(async () => {
+    beforeEach(async () => {
         const result = await store.createNewUser({
             firstname: 'Sallie',
             lastname: 'Test',
@@ -18,7 +18,6 @@ describe('User Model', () => {
     })
 
     it('should update a specific user', async () => {
-        const users = await store.getAllUsers();
         const result = await store.updateUser({
             id: userId,
             firstname: 'Madison',
@@ -53,12 +52,12 @@ describe('User Model', () => {
 
     it('should delete a specific user', async () => {
         await store.deleteUser(userId);
-        let users = await store.getAllUsers();
+        const user = await store.getUserById(Number(userId));
 
-        expect(users.length).toEqual(0);
+        expect(user).toBeUndefined();
     })
 
-    afterAll(async () => {
+    afterEach(async () => {
         // @ts-ignore
         const conn = await client.connect();
         const query = `DELETE FROM users WHERE id=($1)`;

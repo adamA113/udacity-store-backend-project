@@ -8,7 +8,7 @@ describe('Users APIS: ', () => {
     let token: string = "";
     let id: number | null = null;
 
-    beforeAll(async () => {
+    beforeEach(async () => {
         const res = await request(BASE)
             .post("/users/create")
             .send({
@@ -94,7 +94,7 @@ describe('Users APIS: ', () => {
             });
     })
 
-    afterAll(async () => {
+    afterEach(async () => {
         // @ts-ignore
         const conn = await client.connect();
         const query = `DELETE FROM users WHERE id=($1)`;

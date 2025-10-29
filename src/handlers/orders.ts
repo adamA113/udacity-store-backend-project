@@ -34,11 +34,7 @@ export default class OrdersController {
             const { user_id } = req.params;
             const currentOrder = await ordersTable.currentOrderByUser(parseInt(user_id));
             
-            if (currentOrder) {
-                return res.status(200).json(currentOrder);
-            } else {
-                return res.status(200).json({});
-            } 
+            return res.status(200).json(currentOrder);
         } catch (e) {
             return res.status(500).json(e);
         }
@@ -48,14 +44,12 @@ export default class OrdersController {
         try {
             const { user_id, status } = req.body;
 
-            if (!user_id) {
-                return res.status(400).json({
-                    error: 'User ID is required',
-                });
-            } else if (!status) {
-                return res.status(400).json({
-                    error: 'Order status is required',
-                });
+            if (user_id === undefined || user_id === null) {
+                return res.status(400).json({ error: 'User ID is required' });
+            }
+
+            if (status === undefined || status === null) {
+                return res.status(400).json({ error: 'Order status is required' });
             }
 
             const order = await ordersTable.createNewOrder({
@@ -73,10 +67,12 @@ export default class OrdersController {
         try {
             const { order_id, product_id, quantity } = req.body;
 
-            if (!order_id || !product_id || !quantity) {
+            if (order_id === undefined || order_id === null ||
+                product_id === undefined || product_id === null ||
+                quantity === undefined || quantity === null) {
                 return res.status(400).json({
                     error: 'Missing one or more required parameters',
-                })
+                });
             }
 
             const product = await ordersTable.addProductToOrder({
@@ -96,15 +92,15 @@ export default class OrdersController {
             const { user_id, status } = req.body
             const id = req.params.id
 
-            if (!id || !user_id || !status) {
+            if (id === undefined || user_id === undefined || status === undefined) {
                 return res.status(400).json({
                     error: 'Missing one or more required parameters',
-                })
+                });
             }
 
             const order = await ordersTable.updateOrder({
-                id: parseInt(req.params.id),
-                user_id: parseInt(req.params.user_id),
+                id: parseInt(id),
+                user_id: parseInt(user_id),
                 status: status,
             })
             return res.status(201).json(order);

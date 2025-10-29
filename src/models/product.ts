@@ -72,7 +72,7 @@ export class ProductModel {
         try {
             // @ts-ignore
             const conn = await client.connect();
-            const query = 'DELETE FROM products WHERE id=($1)'
+            const query = 'DELETE FROM products WHERE id=($1) RETURNING *'
             const result = await conn.query(query, [id]);
             conn.release();
 

@@ -72,7 +72,7 @@ export class UserModel {
         try {
             // @ts-ignore
             const connection = await client.connect();
-            const query = 'DELETE FROM users WHERE id=($1)';
+            const query = 'DELETE FROM users WHERE id=($1) RETURNING *';
             const result = await connection.query(query, [id]);
             connection.release();
 

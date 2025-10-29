@@ -1,11 +1,13 @@
 import { ProductModel } from '../../models/product';
+// @ts-ignore
+import client from "../../database";
 
 const store = new ProductModel();
 
 describe('Product Model', () => {
     let productId: number;
 
-    beforeAll(async () => {
+    beforeEach(async () => {
         const result = await store.createNewProduct({
             name: 'Test product',
             price: 66.43,
@@ -25,7 +27,7 @@ describe('Product Model', () => {
 
     it('should update a specific product', async () => {
         const result = await store.updateProduct({
-            id: 1,
+            id: productId,
             name: 'Test product 2',
             price: 76.54,
             category: 'New category',
@@ -44,7 +46,7 @@ describe('Product Model', () => {
     })
 
     it('should return a specific  product', async () => {
-        const result = await store.getProductById(1);
+        const result = await store.getProductById(Number(productId));
         expect(result).toEqual({
             id: jasmine.any(Number),
             name: jasmine.any(String),
@@ -55,12 +57,12 @@ describe('Product Model', () => {
 
     it('should delete a specific product', async () => {
         await store.deleteProduct(productId);
-        const result = await store.getAllProducts();
+        const product = await store.getProductById(Number(productId));
 
-        expect(result.length).toEqual(0);
+        expect(product).toBeUndefined();
     })
 
-    afterAll(async () => {
+    afterEach(async () => {
         // @ts-ignore
         const conn = await client.connect();
         const query = `DELETE FROM products WHERE id=($1)`;

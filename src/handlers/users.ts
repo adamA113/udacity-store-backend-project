@@ -36,18 +36,20 @@ export default class UsersController {
 
     async createNewUser(req: express.Request, res: express.Response) {
         try {
-            if (!req.body.firstname || !req.body.lastname || !req.body.password) {
+            const { firstname, lastname, password } = req.body;
+            
+            if (!firstname || !lastname || !password) {
                 return res.status(400).json({
                     error: 'Missing username (first or last name), or password'
                 });
             }
 
-            const hashedPassword = bcrypt.hashSync(req.body.password + pepper, saltRounds);
+            const hashedPassword = bcrypt.hashSync(password + pepper, saltRounds);
 
             try {
                 const newUser = await userTable.createNewUser({
-                    firstname: req.body.firstname,
-                    lastname: req.body.lastname,
+                    firstname: firstname,
+                    lastname: lastname,
                     password: hashedPassword,
                 });
 
@@ -78,7 +80,9 @@ export default class UsersController {
 
     async updateUser(req: express.Request, res: express.Response) {
         try {
-            if (!req.body.firstname || !req.body.lastname) {
+            const { firstname, lastname, password } = req.body;
+
+            if (!firstname || !lastname) {
                 return res.status(400).json({
                     error: 'User first and last names are required',
                 });
@@ -88,12 +92,19 @@ export default class UsersController {
                 });
             }
 
+            const id = parseInt(req.params.id);
+            const hashedPassword = bcrypt.hashSync(password + pepper, saltRounds);
+
             const user = await userTable.updateUser({
-                id: parseInt(req.params.id),
-                firstname: req.body.firstname,
-                lastname: req.body.lastname,
-                password: req.body.password,
+                id,
+                firstname: firstname,
+                lastname: lastname,
+                password: hashedPassword,
             });
+
+            if (!user) {
+                return res.status(404).json({ error: `User with id ${id} not found` });
+            }
 
             return res.status(201).json(user);
         } catch (e) {

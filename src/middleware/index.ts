@@ -5,8 +5,8 @@ export const auth = async (req: Request, res: Response, next: NextFunction) => {
     const token: string | undefined = req.headers.authorization?.split(" ")[1] ?? "";
 
     try {
-        jwt.verify(token, process.env.JWT_SECRET as string);
-    
+        const decoded = jwt.verify(token, process.env.JWT_SECRET as string);
+        res.locals.userData = decoded;
         next();
         return;
     } catch (err) {
